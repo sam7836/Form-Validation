@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <title>Form Validation</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* background-color: #f8f9fa; */
+    margin: 0;
+    background: url("mform.jpg");
+    height: 100vh;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: grid;
+    place-items: center;
+}
+
+.container {
+    /* background-color: #ffffff; */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 19px rgba(0, 0, 0, 0.6);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    backdrop-filter: blur(30px);
+    
+}
+
+label {
+    color: #007bff;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#error-message {
+    font-size: 14px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mt-3 {
+    margin-top: 0.75rem;
+}
+.strength-weak {
+    color: #dc3545;
+}
+
+.strength-medium {
+    color: #ffc107; 
+}
+
+.strength-strong {
+    color: #28a745; 
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <form id="registrationForm">
+            <h2 class="text-center mb-4">User Registration</h2>
+
+            <div class="form-group">
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email ID:</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+                <small id="passwordStrength" class="form-text text-muted mt-1"></small>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+        </form>
+        <div id="error-message" class="text-danger mt-3"></div>
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    validateForm();
+});
+
+document.getElementById('password').addEventListener('input', function () {
+    updatePasswordStrengthIndicator(this.value);
+});
+
+function validateForm() {
+    const fullName = document.getElementById('fullName').value;
+    const email = document.getElementById('email').value;
+    const phoneNumber = document.getElementById('phoneNumber').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    document.getElementById('error-message').innerHTML = '';
+
+    if (fullName.length < 5) {
+        displayError("Name must be at least 5 characters long");
+    }
+
+    if (!email.includes('@')) {
+        displayError("Enter a valid email address");
+    }
+
+    if (!isValidPhoneNumber(phoneNumber)) {
+        displayError("Enter a valid 10-digit phone number");
+    }
+
+    if (!isValidPassword(password, fullName)) {
+        displayError("Password must be at least 8 characters long and not be 'password' or the user's name");
+    }
+
+    if (password !== confirmPassword) {
+        displayError("Passwords do not match");
+    }
+}
+
+function displayError(message) {
+    document.getElementById('error-message').innerHTML = message;
+}
+
+function isValidPhoneNumber(phoneNumber) {
+    return phoneNumber.length === 10 && phoneNumber !== '123456789';
+}
+
+function isValidPassword(password, userName) {
+    return password.length >= 8 && password.toLowerCase() !== 'password' && password.toLowerCase() !== userName.toLowerCase();
+}
+
+function updatePasswordStrengthIndicator(password) {
+    const strengthIndicator = document.getElementById('passwordStrength');
+
+    const weaknesses = [];
+    weaknesses.push(password.length < 8 ? 'Length should be at least 8 characters' : null);
+    weaknesses.push(!/[A-Z]/.test(password) ? 'Include at least one uppercase letter' : null);
+    weaknesses.push(!/[a-z]/.test(password) ? 'Include at least one lowercase letter' : null);
+    weaknesses.push(!/\d/.test(password) ? 'Include at least one digit' : null);
+    weaknesses.push(!/[^A-Za-z0-9]/.test(password) ? 'Include at least one special character' : null);
+
+    const strength = weaknesses.filter(Boolean).length;
+    const strengthText = ['Weak', 'Medium', 'Strong'][Math.min(strength, 2)];
+
+    strengthIndicator.textContent = `Password Strength: ${strengthText}`;
+    strengthIndicator.className = `form-text text-muted mt-1 strength-${strengthText.toLowerCase()}`;
+}
+
+    </script>
+</body>
+</html>
+
+
